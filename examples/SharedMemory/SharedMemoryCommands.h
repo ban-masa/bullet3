@@ -472,9 +472,16 @@ enum EnumSimParamUpdateFlags
 enum EnumLoadSoftBodyUpdateFlags
 {
 	LOAD_SOFT_BODY_FILE_NAME=1,
-    LOAD_SOFT_BODY_UPDATE_SCALE=2,
-    LOAD_SOFT_BODY_UPDATE_MASS=4,
-    LOAD_SOFT_BODY_UPDATE_COLLISION_MARGIN=8
+  LOAD_SOFT_BODY_UPDATE_SCALE=2,
+  LOAD_SOFT_BODY_UPDATE_MASS=4,
+  LOAD_SOFT_BODY_UPDATE_COLLISION_MARGIN=8,
+  LOAD_SOFT_BODY_UPDATE_POS=16,
+  LOAD_SOFT_BODY_UPDATE_ORN=32,
+  LOAD_SOFT_BODY_UPDATE_KLST=64,
+  LOAD_SOFT_BODY_UPDATE_KDF=128,
+  LOAD_SOFT_BODY_UPDATE_KVC=256,
+  LOAD_SOFT_BODY_UPDATE_KEEPVOLUME=512,
+  LOAD_SOFT_BODY_UPDATE_INTERNALFRAME=1024,
 };
 
 enum EnumSimParamInternalSimFlags
@@ -489,9 +496,16 @@ enum EnumSimParamInternalSimFlags
 struct LoadSoftBodyArgs
 {
 	char m_fileName[MAX_FILENAME_LENGTH];
-    double m_scale;
-    double m_mass;
-    double m_collisionMargin;
+  double m_scale;
+  double m_mass;
+  double m_collisionMargin;
+  double m_pos[3];
+  double m_orn[4];
+  double m_kLST;
+  double m_kDF;
+  double m_kVC;
+  bool m_KeepVolume;
+  bool m_InternalFrame;
 };
 
 struct b3LoadSoftBodyResultArgs

@@ -6439,6 +6439,13 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
     double scale = 0.1;
     double mass = 0.1;
     double collisionMargin = 0.02;
+    double pos[3] = {-0.05,0,1.0};
+    double orn[4] = {0.70711,0,0,0.70711};
+    double kLST = 0.5;
+    double kDF = 0.5;
+    double kVC = 0.0;
+    bool KeepVolume = false;
+    bool InternalFrame = false;
 	const LoadSoftBodyArgs& loadSoftBodyArgs = clientCmd.m_loadSoftBodyArguments;
 	if (m_data->m_verboseOutput)
 	{
@@ -6459,7 +6466,36 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
     {
         collisionMargin = clientCmd.m_loadSoftBodyArguments.m_collisionMargin;
     }
-	
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_POS)
+    {
+        int i = 0;
+        for (i = 0; i < 3; i++) pos[i] = clientCmd.m_loadSoftBodyArguments.m_pos[i];
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_ORN)
+    {
+        int i = 0;
+        for (i = 0; i < 4; i++) orn[i] = clientCmd.m_loadSoftBodyArguments.m_orn[i];
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_KLST)
+    {
+        kLST = clientCmd.m_loadSoftBodyArguments.m_kLST;
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_KDF)
+    {
+        kDF = clientCmd.m_loadSoftBodyArguments.m_kDF;
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_KVC)
+    {
+        kVC = clientCmd.m_loadSoftBodyArguments.m_kVC;
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_KEEPVOLUME)
+    {
+        KeepVolume = clientCmd.m_loadSoftBodyArguments.m_KeepVolume;
+    }
+    if (clientCmd.m_updateFlags & LOAD_SOFT_BODY_UPDATE_INTERNALFRAME)
+    {
+        InternalFrame = clientCmd.m_loadSoftBodyArguments.m_InternalFrame;
+    }
 	
 	{
 		char relativeFileName[1024];
@@ -6493,19 +6529,22 @@ bool PhysicsServerCommandProcessor::processLoadSoftBodyCommand(const struct Shar
 			{
 				btSoftBody*	psb=btSoftBodyHelpers::CreateFromTriMesh(m_data->m_dynamicsWorld->getWorldInfo(),&vertices[0],&indices[0],numTris);
 				btSoftBody::Material*	pm=psb->appendMaterial();
-				pm->m_kLST				=	0.5;
+				pm->m_kLST				=	kLST;
 				pm->m_flags				-=	btSoftBody::fMaterial::DebugDraw;
 				psb->generateBendingConstraints(2,pm);
 				psb->m_cfg.piterations	=	20;
-				psb->m_cfg.kDF			=	0.5;
+				psb->m_cfg.kDF			=	kDF;
+				psb->m_cfg.kVC			=	kVC;
 				psb->randomizeConstraints();
-				psb->rotate(btQuaternion(0.70711,0,0,0.70711));
-				psb->translate(btVector3(-0.05,0,1.0));
+				psb->rotate(btQuaternion(orn[0],orn[1],orn[2],orn[3]));
+				psb->translate(btVector3(pos[0],pos[1],pos[2]));
 				psb->scale(btVector3(scale,scale,scale));
 				
 				psb->setTotalMass(mass,true);
 				psb->getCollisionShape()->setMargin(collisionMargin);
 				psb->getCollisionShape()->setUserPointer(psb);
+        psb->setPose(KeepVolume, InternalFrame);
+        psb->m_cfg.kMT=0.5;
 				m_data->m_dynamicsWorld->addSoftBody(psb);
 				m_data->m_guiHelper->createCollisionShapeGraphicsObject(psb->getCollisionShape());
 				m_data->m_guiHelper->autogenerateGraphicsObjects(this->m_data->m_dynamicsWorld);

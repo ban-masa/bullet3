@@ -1773,18 +1773,27 @@ static PyObject* pybullet_loadSoftBody(PyObject* self, PyObject* args, PyObject*
 {
 	int physicsClientId = 0;
 	int flags = 0;
+	PyObject* posObj = 0;
+	PyObject* ornObj = 0;
 	
-	static char* kwlist[] = {"fileName", "scale", "mass", "collisionMargin", "physicsClientId", NULL};
+	static char* kwlist[] = {"fileName", "scale", "mass", "posObj", "ornObj", "collisionMargin", "kLST", "kDF", "kVC", "KeepVolume", "InternalFrame", "physicsClientId", NULL};
 	
 	int bodyUniqueId= -1;
 	const char* fileName = "";
 	double scale = -1;
 	double mass = -1;
 	double collisionMargin = -1;
+  double pos[3] = {0.0, 0.0, 0.0};
+  double orn[4] = {0.0, 0.0, 0.0, 1.0};
+  double kLST = -1;
+  double kDF = -1;
+  double kVC = -1;
+  int KeepVolume = -1;
+  int InternalFrame = -1;
 	
 	b3PhysicsClientHandle sm = 0;
 	
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "s|dddi", kwlist, &fileName, &scale, &mass, &collisionMargin, &physicsClientId))
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "s|ddOOddddiii", kwlist, &fileName, &scale, &mass, &posObj, &ornObj, &collisionMargin, &kLST, &kDF, &kVC, &KeepVolume, &InternalFrame, &physicsClientId))
 	{
 		return NULL;
 	}
@@ -1803,6 +1812,40 @@ static PyObject* pybullet_loadSoftBody(PyObject* self, PyObject* args, PyObject*
 		b3SharedMemoryCommandHandle command =
 		b3LoadSoftBodyCommandInit(sm, fileName);
 
+    if (posObj) {
+      PyObject* seq;
+      int len, i;
+      seq = PySequence_Fast(posObj, "expected a sequence");
+      len = PySequence_Size(posObj);
+      if (len == 3) {
+        for (i = 0; i < 3; i++) {
+          pos[i] = pybullet_internalGetFloatFromSequence(seq, i);
+        }
+      } else {
+        PyErr_SetString(SpamError, "position needs a 3 coordinates [x,y,z].");
+        Py_DECREF(seq);
+        return NULL;
+      }
+			b3LoadSoftBodySetPos(command, pos[0], pos[1], pos[2]);
+      Py_DECREF(seq);
+    }
+    if (ornObj) {
+      PyObject* seq;
+      int len, i;
+      seq = PySequence_Fast(ornObj, "expected a sequence");
+      len = PySequence_Size(ornObj);
+      if (len == 4) {
+        for (i = 0; i < 4; i++) {
+          orn[i] = pybullet_internalGetFloatFromSequence(seq, i);
+        }
+      } else {
+        PyErr_SetString(SpamError, "orientation needs a 4 coordinates [x,y,z,w].");
+        Py_DECREF(seq);
+        return NULL;
+      }
+      Py_DECREF(seq);
+			b3LoadSoftBodySetOrn(command, orn[0], orn[1], orn[2], orn[3]);
+    }
 		if (scale>0)
 		{
 			b3LoadSoftBodySetScale(command,scale);
@@ -1815,6 +1858,28 @@ static PyObject* pybullet_loadSoftBody(PyObject* self, PyObject* args, PyObject*
 		{
 			b3LoadSoftBodySetCollisionMargin(command,collisionMargin);
 		}
+    if (kLST>0)
+    {
+			b3LoadSoftBodySetkLST(command,kLST);
+    }
+    if (kDF>0)
+    {
+			b3LoadSoftBodySetkDF(command,kDF);
+    }
+    if (kVC>0)
+    {
+			b3LoadSoftBodySetkVC(command,kVC);
+    }
+    if (KeepVolume>0 && KeepVolume<2)
+    {
+      b3LoadSoftBodySetKeepVolume(command, KeepVolume);
+    }
+    if (InternalFrame>0 && InternalFrame<2)
+    {
+      b3LoadSoftBodySetInternalFrame(command, InternalFrame);
+    }
+
+
 		statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
 		statusType = b3GetStatusType(statusHandle);
 		if (statusType != CMD_LOAD_SOFT_BODY_COMPLETED)

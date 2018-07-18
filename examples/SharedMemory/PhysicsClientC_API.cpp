@@ -310,6 +310,74 @@ B3_SHARED_API int b3LoadSoftBodySetCollisionMargin(b3SharedMemoryCommandHandle c
     return 0;
 }
 
+B3_SHARED_API int b3LoadSoftBodySetPos(b3SharedMemoryCommandHandle commandHandle, double x, double y, double z)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_pos[0] = x;
+    command->m_loadSoftBodyArguments.m_pos[1] = y;
+    command->m_loadSoftBodyArguments.m_pos[2] = z;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_POS;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetOrn(b3SharedMemoryCommandHandle commandHandle, double x, double y, double z, double w)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_orn[0] = x;
+    command->m_loadSoftBodyArguments.m_orn[1] = y;
+    command->m_loadSoftBodyArguments.m_orn[2] = z;
+    command->m_loadSoftBodyArguments.m_orn[3] = w;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_ORN;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetkLST(b3SharedMemoryCommandHandle commandHandle, double kLST)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_kLST = kLST;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_KLST;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetkDF(b3SharedMemoryCommandHandle commandHandle, double kDF)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_kDF = kDF;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_KDF;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetkVC(b3SharedMemoryCommandHandle commandHandle, double kVC)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_kVC = kVC;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_KVC;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetKeepVolume(b3SharedMemoryCommandHandle commandHandle, int KeepVolume)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_KeepVolume = (bool)KeepVolume;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_KEEPVOLUME;
+    return 0;
+}
+
+B3_SHARED_API int b3LoadSoftBodySetInternalFrame(b3SharedMemoryCommandHandle commandHandle, int InternalFrame)
+{
+    struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;
+    b3Assert(command->m_type == CMD_LOAD_SOFT_BODY);
+    command->m_loadSoftBodyArguments.m_InternalFrame = (bool)InternalFrame;
+    command->m_updateFlags |= LOAD_SOFT_BODY_UPDATE_INTERNALFRAME;
+    return 0;
+}
+
 B3_SHARED_API int	b3LoadUrdfCommandSetUseMultiBody(b3SharedMemoryCommandHandle commandHandle, int useMultiBody)
 {
     struct SharedMemoryCommand* command = (struct SharedMemoryCommand*) commandHandle;

@@ -1,0 +1,14 @@
+pybullet.cにpythonのメソッドが定義されている
+基本的に各メソッドでは、serverに送るcommandを生成している。
+メソッドに引数を追加するにはkeywordに引数名を追加して、引数の方の羅列を修正する(s|dddiみたいなやつ)
+他のメソッド見ながらいい感じに修正する。
+ただし、コマンドがそもそも適したパラメータを持っているとは限らない
+
+commandを設定する関数はPhysicsClientC_API.cppで定義されている
+softbody設定用のコマンドの場合m_LoadSoftBodyArgumentsの中に諸々のパラメータを格納する。
+m_LoadSoftBodyArgumentsはSharedMemoryCommands.hに定義されている。
+ここにパラメータ変数を追加すればよい
+実際にパラメータ変数が反映されるのはPhysicsServerCommandProcessor.cppの中
+SoftBodyの場合processLoadSoftBodyCommand
+これはm_typeによって分岐する
+m_typeの種類はShaedMemoryPublic.hに記載

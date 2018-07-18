@@ -563,6 +563,13 @@ B3_SHARED_API	b3SharedMemoryCommandHandle	b3LoadSoftBodyCommandInit(b3PhysicsCli
 B3_SHARED_API	int b3LoadSoftBodySetScale(b3SharedMemoryCommandHandle commandHandle, double scale);
 B3_SHARED_API	int b3LoadSoftBodySetMass(b3SharedMemoryCommandHandle commandHandle, double mass);
 B3_SHARED_API	int b3LoadSoftBodySetCollisionMargin(b3SharedMemoryCommandHandle commandHandle, double collisionMargin);
+B3_SHARED_API	int b3LoadSoftBodySetPos(b3SharedMemoryCommandHandle commandHandle, double x, double y, double z);
+B3_SHARED_API	int b3LoadSoftBodySetOrn(b3SharedMemoryCommandHandle commandHandle, double x, double y, double z, double w);
+B3_SHARED_API int b3LoadSoftBodySetkLST(b3SharedMemoryCommandHandle commandHandle, double kLST);
+B3_SHARED_API int b3LoadSoftBodySetkDF(b3SharedMemoryCommandHandle commandHandle, double kDF);
+B3_SHARED_API int b3LoadSoftBodySetkVC(b3SharedMemoryCommandHandle commandHandle, double kVC);
+B3_SHARED_API int b3LoadSoftBodySetKeepVolume(b3SharedMemoryCommandHandle commandHandle, int KeepVolume);
+B3_SHARED_API int b3LoadSoftBodySetInternalFrame(b3SharedMemoryCommandHandle commandHandle, int InternalFrame);
 
 
 B3_SHARED_API	b3SharedMemoryCommandHandle	b3RequestVREventsCommandInit(b3PhysicsClientHandle physClient);
